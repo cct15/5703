@@ -35,6 +35,7 @@ I expect the slope and intercept of the line and to be positive. Because more li
 (b) $\alpha$ is the cirrhosis mortality rate in region where liquor consumption is equal to the mean consumption. $\beta$ represents the influence caused by liquor consumption per capita on the cirrhosis mortality rate.
 
 ## (5)
+We use model (a) here.
 ```{r}
 model <- lm(cirrhosis~liquor, data = data)
 summary(model)
@@ -42,7 +43,7 @@ summary(model)
 
 $\alpha=21.96$, $\beta=0.72$. They are statistically significant.
 
-The sign of two estimators are both positive which is same as our intuition. It shows that in region where people don't drink alcohol the cirrhosis mortality rate is 21.96 per 100,000 people.
+It shows that in region where people don't drink alcohol the cirrhosis mortality rate is 21.96 per 100,000 people. And for each capita increase of liquor consumption, the cirrhosis mortality rate would increase by 0.722.
 
 ## (6)
 
@@ -66,9 +67,58 @@ res <- resid(model)
 ggplot() + geom_point(aes(x = data$liquor, y = res))
 ```
 
+Yes, it does. We can see that the residuals are randomly distributed around 0. It's reasonable to assume iid.
+
+## (9)
 
 
+## (10)
+```{r}
+# Bootstrap 95% CI 
+library(boot)
 
+bootstrap <- function(data, indices) {
+  d <- data[indices,] # allows boot to select sample 
+  fit <- lm(cirrhosis~liquor, data=d)
+  return(coef(fit)['liquor'])
+} 
+# bootstrapping with 1000 replications 
+set.seed(31415)
+results <- boot(data=data, statistic=bootstrap, R=1000)
+
+# view results
+ggplot() + geom_histogram(aes(x = results$t), bins = 50)
+```
+
+```{r}
+# get 95% confidence interval 
+boot.ci(results, type="bca")
+```
+
+The confidence interval of bootstrap is (0.5738,1.0466)
+
+## (11)
+```{r}
+library(dplyr)
+try <- function(i) {
+  if (i == nrow(data)) data_loo <- data[0:(i-1),]
+  else data_loo <- data[c(0:(i-1),(i+1):(nrow(data))),]
+  return(corr(data_loo)-corr(data))
+}
+corr_d <- unlist(Map(try,1:nrow(data)))
+data$corr_d <- corr_d
+```
+
+```{r}
+plot(corr_d)
+```
+
+
+```{r}
+data[order(corr_d),][1,]
+```
+
+We can see that the data (149,122.5) have particular influence in the analysis.
 
 
 
