@@ -1,0 +1,79 @@
+---
+title: "exercise4"
+author: Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+data <- read.csv('liver.csv')
+```
+
+## (1)
+```{r}
+ggplot(data) + geom_point(aes(x = liquor, y = cirrhosis))
+```
+
+From the graph, we can see positive linear correlation between two variables. So it's reasonable to fit a straight line to this data set.
+
+## (2)
+The response variable is cirrhosis mortality rate.
+
+## (3)
+I expect the slope and intercept of the line and to be positive. Because more liquor consumption leads to worse health. The mortality rate would rise. And if people don't drink alcohol, people would still die because of cirrhosis. So the intercept should be positive.
+
+## (4)
+(a) $\alpha$ is the cirrhosis mortality rate in region where people don't drink alcohol. $\beta$ represents the influence caused by liquor consumption per capita on the cirrhosis mortality rate.
+
+(b) $\alpha$ is the cirrhosis mortality rate in region where liquor consumption is equal to the mean consumption. $\beta$ represents the influence caused by liquor consumption per capita on the cirrhosis mortality rate.
+
+## (5)
+```{r}
+model <- lm(cirrhosis~liquor, data = data)
+summary(model)
+```
+
+$\alpha=21.96$, $\beta=0.72$. They are statistically significant.
+
+The sign of two estimators are both positive which is same as our intuition. It shows that in region where people don't drink alcohol the cirrhosis mortality rate is 21.96 per 100,000 people.
+
+## (6)
+
+
+
+
+
+
+
+## (7)
+```{r}
+predict(model,data.frame(liquor=180))
+```
+Prediction: 151.97
+
+It's not a good predictor. Because in the dataset there is no liquor that larger than 150. And there is only one data of liquor larger than 100. So it's not appropriate to use the model to predict region with liquor consumption of 180 ounces.
+
+## (8)
+```{r}
+res <- resid(model)
+ggplot() + geom_point(aes(x = data$liquor, y = res))
+```
+
+
+
+
+
+
+
+
+
+
+
+
