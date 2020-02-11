@@ -97,17 +97,17 @@ where $\sigma^2_X=lim_{n\rightarrow \infty}\frac{1}{n}\sum_{i=1}^{n}(X_i-\bar X)
 
 Use the Slutsky's Theorem we can get the aymptotic confidence interval is $\beta\pm z_{0.975}\frac{\hat\sigma}{\sqrt{\sum_{i=1}^{n}(X_i-\bar X)^2}}$
 
-We can use sample standard deviation of residual as $\hat\sigma$.
+We can use $\sqrt{\frac{SSR}{n-2}}$ as $\hat\sigma$.
 
 ```{r}
-s_hat <- sd(res)
+s_hat <- sd(res)*(nrow(data)-1)/(nrow(data)-2)
 interval2 <- qnorm(0.975)*s_hat/sqrt(sxx)
 l2 <- as.numeric(coef(model)['liquor'])-interval2
 r2 <- as.numeric(coef(model)['liquor'])+interval2
 print(c(l2,r2))
 ```
 
-So the asymptotic confidence interval is (0.496,0.949)
+So the asymptotic confidence interval is (0.491,0.954)
 
 The two confidence intervals are similar. The first interval is under normal assumption. The second one is under the condition of large n. The advantage of the first one is that it can be used when n is small. The advantage of the second one is that we don't need normal assumption.
 
