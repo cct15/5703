@@ -4,20 +4,10 @@ author: Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r}
-library(ggplot2)
-```
-
-```{r}
-data <- read.csv('liver.csv')
-```
-
 ## (1)
 ```{r}
+library(ggplot2)
+data <- read.csv('liver.csv')
 ggplot(data) + geom_point(aes(x = liquor, y = cirrhosis))
 ```
 
@@ -47,7 +37,7 @@ It shows that in region where people don't drink alcohol the cirrhosis mortality
 
 ## (6)
 
-The least square estimates are the best linear fit as we estimate a linear model by square function.
+The least square estimates are the best linear fit as we estimate a linear model by square errors function.
 
 ## (7)
 ```{r}
