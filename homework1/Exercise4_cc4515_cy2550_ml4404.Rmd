@@ -1,5 +1,5 @@
 ---
-title: "exercise4"
+title: "Exercise4"
 author: Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404
 output: pdf_document
 ---
@@ -47,11 +47,7 @@ It shows that in region where people don't drink alcohol the cirrhosis mortality
 
 ## (6)
 
-
-
-
-
-
+The least square estimates are the best linear fit as we estimate a linear model by square function.
 
 ## (7)
 ```{r}
@@ -85,14 +81,35 @@ $\hat\beta\pm t_{0.975,n-2}\sqrt{\frac{(n-2)(Y_i-\hat\alpha-\hat\beta x_i)^2}{(x
 ```{r}
 residual <- sum(res^2)
 sxx <- sum(data$liquor^2) - nrow(data)*(mean(data$liquor)^2)
-interval <- qt(0.975,nrow(data)-2) * sqrt(residual*(nrow(data)-2)/sxx)
+interval <- qt(0.975,nrow(data)-2) * sqrt(residual/(nrow(data)-2)/sxx)
 l <- as.numeric(coef(model)['liquor'])-interval
 r <- as.numeric(coef(model)['liquor'])+interval
 print(c(l,r))
 ```
 
-So the confidence interval is (-9.63,11.08)
+So the confidence interval is (0.487,0.958)
 
+From Exercise 3 Q4.4 we know that without normality assumption, we have:
+
+$/sqrt(n)(\hat\beta_{LS}-\beta)\rightarrow^DN(0,\sigma^2/\sigma^2_X)$
+
+where $\sigma^2_X=lim_{n\rightarrow \infty}\frac{1}{n}\sum_{i=1}^{n}(X_i-\bar X)^2$
+
+Use the Slutsky's Theorem we can get the aymptotic confidence interval is $\beta\pm z_{0.975}\frac{\hat\sigma}{\sqrt{\sum_{i=1}^{n}(X_i-\bar X)^2}}$
+
+We can use sample standard deviation of residual as $\hat\sigma$.
+
+```{r}
+s_hat <- sd(res)
+interval2 <- qnorm(0.975)*s_hat/sqrt(sxx)
+l2 <- as.numeric(coef(model)['liquor'])-interval2
+r2 <- as.numeric(coef(model)['liquor'])+interval2
+print(c(l2,r2))
+```
+
+So the asymptotic confidence interval is (0.496,0.949)
+
+The two confidence intervals are similar. The first interval is under normal assumption. The second one is under the condition of large n. The advantage of the first one is that it can be used when n is small. The advantage of the second one is that we don't need normal assumption.
 
 ## (10)
 ```{r}
@@ -117,7 +134,7 @@ ggplot() + geom_histogram(aes(x = results$t), bins = 50)
 boot.ci(results, type="bca")
 ```
 
-The confidence interval of bootstrap is (0.5738,1.0466)
+The confidence interval of bootstrap is (0.5738,1.0466). It's similar to the results in (9).
 
 ## (11)
 ```{r}
