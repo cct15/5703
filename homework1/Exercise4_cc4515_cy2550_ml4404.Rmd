@@ -53,7 +53,7 @@ res <- resid(model)
 ggplot() + geom_point(aes(x = data$liquor, y = res))
 ```
 
-Yes, it does. We can see that the residuals are randomly distributed around 0. It's reasonable to assume iid.
+Yes, it does. We can see that the residuals are randomly distributed around 0 and independent to liquor. It's reasonable to assume iid.
 
 ## (9)
 
