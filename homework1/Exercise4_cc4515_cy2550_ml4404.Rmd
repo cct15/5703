@@ -71,6 +71,28 @@ Yes, it does. We can see that the residuals are randomly distributed around 0. I
 
 ## (9)
 
+As we know:
+$\sqrt{\frac{(n-2)S_{xx}}{SSR}}(\hat\beta-\beta) \sim t_{n-2}$
+
+$S_{xx}=\sum_{i=1}^{n}(x_i-\bar x)^2$
+
+$SSR=\sum_{i=1}^{n}(Y_i-\hat\alpha-\hat\beta x_i)^2$
+
+So the 95% confidence interval for $\beta$ is 
+
+$\hat\beta\pm t_{0.975,n-2}\sqrt{\frac{(n-2)(Y_i-\hat\alpha-\hat\beta x_i)^2}{(x_i-\bar x)^2}}$
+
+```{r}
+residual <- sum(res^2)
+sxx <- sum(data$liquor^2) - nrow(data)*(mean(data$liquor)^2)
+interval <- qt(0.975,nrow(data)-2) * sqrt(residual*(nrow(data)-2)/sxx)
+l <- as.numeric(coef(model)['liquor'])-interval
+r <- as.numeric(coef(model)['liquor'])+interval
+print(c(l,r))
+```
+
+So the confidence interval is (-9.63,11.08)
+
 
 ## (10)
 ```{r}
