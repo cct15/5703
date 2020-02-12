@@ -81,7 +81,7 @@ So the confidence interval is (0.487,0.958)
 
 From Exercise 3 Q4.4 we know that without normality assumption, we have:
 
-$/sqrt(n)(\hat\beta_{LS}-\beta)\rightarrow^DN(0,\sigma^2/\sigma^2_X)$
+$\sqrt{n}(\hat\beta_{LS}-\beta)\rightarrow^DN(0,\sigma^2/\sigma^2_X)$
 
 where $\sigma^2_X=lim_{n\rightarrow \infty}\frac{1}{n}\sum_{i=1}^{n}(X_i-\bar X)^2$
 
