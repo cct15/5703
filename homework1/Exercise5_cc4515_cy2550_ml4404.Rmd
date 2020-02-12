@@ -61,3 +61,6 @@ print(c(m-interval,m+interval))
 
 ## (8)
 
+## (9)
+
+In the paper $\mu=1.4$. Our estimation of $\mu$ is 1.398, almost equal to the answer in paper. Simonton’s technique is very accurate.
