@@ -14,6 +14,8 @@ Let X be Poisson Distribution.
 $EY=\frac{1}{1-e^{-\mu}-\mu e^{-\mu}}(EX-P(X=0)*0-P(X=1)*1)$
 $=\frac{\mu-\mu e^{-\mu}}{1-e^{-\mu}-\mu e^{-\mu}}$
 
+$VarY=(\mu-\mu e^{-\mu})*\frac{1}{1-e^{-\mu}-\mu e^{-\mu}}=\frac{\mu e^{\mu}-\mu}{e^{\mu}-1-\mu}$
+
 ## (4)
 Log likelihood: $\sum_{i=1}^{n}(-\mu+y_iln(\mu)-ln(y_i!)-ln(1-e^{-\mu}-\mu e^{-\mu}))$
 
