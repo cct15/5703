@@ -72,4 +72,4 @@ However, this approach can't get many properties of the estimators like bias, co
 
 ## (9)
 
-In the paper $\mu=1.4$. Our estimation of $\mu$ is 1.398, almost equal to the answer in paper. Simonton’s technique is very accurate.
+In the paper $\mu=1.4$, it's almost equal to our estimation $\mu=1.398$. Simonton’s technique is very accurate.
