@@ -66,7 +66,9 @@ print(c(m-interval,m+interval))
 
 ## (8)
 
+It seems like a reasonable approach without using algorithm such as gradient descent. 
 
+However, this approach can't get many properties of the estimators like bias, consistency and variance. We can only compared the goodness of fit with the other estimators.
 
 ## (9)
 
