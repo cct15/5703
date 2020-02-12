@@ -31,7 +31,7 @@ log_mle <- function(miu) {
 }
 miu <- seq(0.8,1.6,0.1)
 mle <- sapply(miu,log_mle)
-ggplot() + geom_line(aes(x = miu, y = mle))
+ggplot() + geom_line(aes(x = miu, y = mle)) + xlab("mu")
 ```
 
 ## (5)
