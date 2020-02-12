@@ -38,4 +38,26 @@ optim(initial, a <- function(x){return(-log_mle(x))}, method = "BFGS")
 
 We use BFGS. The MLE of $\mu$ is 1.398.
 
+## (6)
+
+$\sqrt{n}(\hat\mu_{MLE}-\mu)\rightarrow^D N(0,I^{-1}(\mu))$
+
+$I(\mu)=-E(\frac{d^2(-\mu+yln(\mu)-ln(y!)-ln(1-e^{-\mu}-\mu e^{-\mu}))}{d\mu^2})$
+
+$=E(\frac{y}{\mu^2}+\frac{e^{\mu}-\mu e^{\mu}-1}{(e^{\mu}-1-\mu)^2})=\frac{(e^{\mu}-1)^2-\mu^2 e^{\mu}}{\mu(e^{\mu}-1-\mu)^2}$
+
+## (7)
+Through the asymptotic distribution of $\mu_{MLE}-\mu$, we can get a 0.95 asymptotic confidence interval.
+
+$[\hat\mu_{MLE}-\frac{Z_{0.975}}{\sqrt{nI(\hat\mu)}},\hat\mu_{MLE}+\frac{Z_{0.975}}{\sqrt{nI(\hat\mu)}}]$
+
+```{r}
+m <- 1.398
+i <- ((exp(m)-1)^2-m^2*exp(m))/m/(exp(m)-1-m)^2
+interval <- qnorm(0.975)/sqrt(sum(data$freq)*i)
+print(c(m-interval,m+interval))
+```
+95% CI is [1.20,1.60]
+
+## (8)
 
