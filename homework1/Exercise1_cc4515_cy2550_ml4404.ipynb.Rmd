@@ -1,0 +1,62 @@
+---
+title: "HW1"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 1.
+
+#### Question 1.
+$Q_D(p)$ is  $p^{th}$ population quantile such that $P(D\leq Q_D(p))=p$. 
+
+In order word:
+$$\int_{0}^{Q_D(p)}\lambda e^{-\lambda D}dD=1-e^{-\lambda Q_D(p)}=p$$
+
+
+$$Q_D(p)=-\frac{1}{\lambda}\ln{(1-p)}$$
+
+#### Question 2 
+First empirical moment of the exponential distribution:
+$$\hat\mu = \bar{D_n}$$
+Population moment of the exponential distribution:
+$$E(D_1) = \frac{1}{\lambda}$$
+The MOM estimator of $\lambda$ is : $\hat\lambda^{MOM} = \frac{1}{\bar{D_n}}$
+
+Therefore the method of moments-based estimator of $Q_D(p)$ :
+$$Q_D(p)^{MOM}=-\frac{1}{\hat\lambda^{MOM}}\ln{(1-p)}=-\bar{D_n}\ln{(1-p)}$$
+
+#### Question3
+From the CLT
+$$\sqrt{n}(\bar{D_n}-\frac{1}{\lambda})\xrightarrow[n\rightarrow \infty]{\mathcal{D}}\mathcal{N}(0,\frac{1}{\lambda^2})$$
+Hence, by Delta Method we can get,
+let $g(t) = t*ln(1-p)$ so $g'(t) = ln(1-p)$ 
+$$\sqrt{n}(\ln{(1-p)}{\bar{D_n}}+Q_D(p))\xrightarrow[n\rightarrow \infty]{\mathcal{D}}\mathcal{N}(0,\frac{(\ln{(1-p)})^2}{\lambda^2})$$
+Since $\hat\lambda^{MOM} = \frac{1}{\bar{D_n}}$
+
+$$\sqrt{n}(\ln{(1-p)}{\frac{1}{\lambda}}+Q_D(p))\xrightarrow[n\rightarrow \infty]{\mathcal{D}}\mathcal{N}(0,\frac{(\ln{(1-p)})^2}{\lambda^2})$$
+
+So, the $approximate\ (1-\alpha)$-confidence interval for $Q_D(p)$ is $$[-\bar{D_n}\ln{(1-p)}-\frac{z_{1-\alpha/2}\times\ln{(1-p)}}{\lambda\sqrt{n}},-\bar{D_n}\ln{(1-p)}+\frac{z_{1-\alpha/2}\times\ln{(1-p)}}{\lambda\sqrt{n}}]$$
+
+#### Question 4.
+We know that if $D_1,...,D_n$ are independent exponential random variables with parameter $\lambda$, then
+$$\sum_{i = 1}^{n}D_i \sim \Gamma(n,\lambda)$$
+Therefore
+$$\lambda\bar{D_n}= \frac{\lambda}{n}\sum_{i=1}^{n}D_i \sim \Gamma(n,n)$$
+So, $\lambda\bar{D_n}$ is independent of the parameter $\lambda$, which means it is an exact pivot.
+
+From previous question 
+$$Q_D(p)=-\frac{1}{\lambda}\ln{(1-p)}$$
+$$Q_D(0.5)=\frac{1}{\lambda}\ln{(2)}$$
+To construct 95% confidence interval, let a and b be the 0.025 and 0.975 quantile of $\Gamma(n,n)$
+
+Therefore
+$$P(a < \lambda\bar{D_n} < b) = 0.95$$
+
+$$P(\frac{\bar{D_n}ln(2)}{b}<\frac{1}{\lambda}\ln{(2)}<\frac{\bar{D_n}ln(2)}{a}) = 0.95$$
+
+The confidence interval is $[\frac{\bar{D_n}ln(2)}{b},\frac{\bar{D_n}ln(2)}{a}]$
