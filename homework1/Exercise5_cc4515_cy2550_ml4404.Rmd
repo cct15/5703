@@ -3,6 +3,11 @@ title: "Exercise5"
 author: Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404
 output: pdf_document
 ---
+## (1)
+There are many independent and simultaneous discoveries or inventions. The two hypotheses about this are the social deterministic perspective and probabilistic model. The author thinks the later one deserves detailed inspection and he would like to look deeper in it based on three questions: the theoretical basis, the performance and the implication. The model is to apply Poisson distribution to the problem. The assumption is that the product of n and p is a constant $\mu$. I think it is reasonable to use Poisson distribution because firstly the inventions are random events and they happen with a probability. Also, Poisson distribution is more proper than Bernoulli because we cannot get enough information to estimate the parameters of Bernoulli while with the assumption, we only have one parameter in Poisson and the model could be studied better.
+
+## (2)
+The frequencies of $k=0$ and $k=1$ cannot be observed. So, in the truncated Poisson, we only count the situations when $k>2$. To keep the total probability being 1, a coefficient is added.
 
 ## (3)
 Let X be Poisson Distribution.
@@ -60,6 +65,8 @@ print(c(m-interval,m+interval))
 95% CI is [1.20,1.60]
 
 ## (8)
+
+
 
 ## (9)
 
