@@ -4,8 +4,13 @@ author: Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404
 output: pdf_document
 ---
 
+## (3)
+Let X be Poisson Distribution.
+$EY=\frac{1}{1-e^{-\mu}-\mu e^{-\mu}}(EX-P(X=0)*0-P(X=1)*1)$
+$=\frac{\mu-\mu e^{-\mu}}{1-e^{-\mu}-\mu e^{-\mu}}$
+
 ## (4)
-MLE: $\sum_{i=1}^{n}(-\mu+x_iln(\mu)-ln(x_i!))$
+Log likelihood: $\sum_{i=1}^{n}(-\mu+y_iln(\mu)-ln(y_i!)-ln(1-e^{-\mu}-\mu e^{-\mu}))$
 
 ```{r}
 library(ggplot2)
