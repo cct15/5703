@@ -37,7 +37,8 @@ It shows that in region where people don't drink alcohol the cirrhosis mortality
 
 ## (6)
 
-The least square estimates are the best linear fit as we estimate a linear model by square errors function.
+If we don't assume a linear model, $\alpha$ will be the mean when $x=0$, and $\beta$ will be the mean of the slopes at all points in the model.
+
 
 ## (7)
 ```{r}
