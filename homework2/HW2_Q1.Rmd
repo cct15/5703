@@ -1,0 +1,78 @@
+---
+title: "HW2"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+transplant <- read.table("~/Desktop/stat5703/HW/HW2/transplant.txt", quote="\"", comment.char="")
+colnames(transplant)<-c("time","type","s")
+```
+
+####1 
+Answer:
+We could assume the right censoring in this data set is random
+because the death of the plant will occur after the recorded time.
+
+####2
+```{r}
+library(ggfortify)
+library(survival)
+library(dplyr)
+library(ggplot2)
+autoplot(survfit(Surv(time, s) ~ type,data=transplant))
+```
+
+The plot seem to indicate a difference between two groups. Transplant allogeneic seems to be more efficient.
+
+####3
+```{r}
+fit_exp <- survreg(Surv(time,s)~type, dist="exp",data=transplant)
+summary(fit_exp)
+```
+
+From the summary table, we can see that the estimated value of autologous is a negative value (-0.325). Which means Transplant autologous would cause less survival time. This result is consistant with our previous observation. 
+
+####4
+From summary table, we get the p value is 0.25 which is larger than normal thresholds 0.05. So there is no strong evidence against the null hypothesis :there is no difference between the transplant type. These conclusion depend on the assumption of exponential parametric model and asymptotic approximation to the distribution of the likelihood ratio statistic.
+
+
+####5
+```{r}
+fit<- survfit(Surv(time,s)~type,data=transplant)
+par(mfrow=c(1,1))
+plot(fit,xlab="Days",conf.int=TRUE,main="Survival times",col=c("red","blue"))
+
+x <- seq(from=0,to=2300,by=1)
+lines(x,1-pexp(x,exp(-coef(fit_exp)[1])),col="red")
+lines(x,1-pexp(x,exp(-sum(coef(fit_exp)))),col="blue")
+
+```
+
+From the graph, we can see that exponential model does great to fit. Most time the lines represent the exponential model lie inside the corresponding types' confidence interval. It does better job for fitting type 2 than fitting type 1.  But it is not really good when fitting type 1 as it the fitted line goes outside of confidence interval after around time=55.
+
+
+```{r}
+fit_wei <- survreg(Surv(time,s)~type,data=transplant)
+summary(fit_wei)
+```
+```{r}
+par(mfrow=c(1,1))
+plot(fit,col=c("red","blue"),xlab="Days",conf.int=TRUE,main="Survival times")
+
+x <- seq(from=0,to=2300,by=1)
+lines(x,1-pexp(x,exp(-coef(fit_exp)[1])),col="red")
+lines(x,1-pexp(x,exp(-sum(coef(fit_exp)))),col="blue")
+
+lines(x,1-pweibull(x,fit_wei$scale,exp(coef(fit_wei)[1])),col="green")
+lines(x,1-pweibull(x,fit_wei$scale,exp(sum(coef(fit_wei)))),col="darkgreen")
+```
+
+We see that the Weibull model does not fit the data better. The new parameter log(scale) is significant since the pvalue is small, but the type still seems not significant.From the plot we cannot see any improvement in the estimated Weibull survival functions.
+
+
