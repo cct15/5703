@@ -1,8 +1,7 @@
 ---
 title: "HW1"
-output:
-  html_document: default
-  pdf_document: default
+author: Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}

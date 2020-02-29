@@ -3,11 +3,18 @@ title: "Exercise5"
 author: Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404
 output: pdf_document
 ---
+## (1)
+There are many independent and simultaneous discoveries or inventions. The two hypotheses about this are the social deterministic perspective and probabilistic model. The author thinks the later one deserves detailed inspection and he would like to look deeper in it based on three questions: the theoretical basis, the performance and the implication. The model is to apply Poisson distribution to the problem. The assumption is that the product of n and p is a constant $\mu$. I think it is reasonable to use Poisson distribution because firstly the inventions are random events and they happen with a probability. Also, Poisson distribution is more proper than Bernoulli because we cannot get enough information to estimate the parameters of Bernoulli while with the assumption, we only have one parameter in Poisson and the model could be studied better.
+
+## (2)
+The frequencies of $k=0$ and $k=1$ cannot be observed. So, in the truncated Poisson, we only count the situations when $k>2$. To keep the total probability being 1, a coefficient is added.
 
 ## (3)
 Let X be Poisson Distribution.
 $EY=\frac{1}{1-e^{-\mu}-\mu e^{-\mu}}(EX-P(X=0)*0-P(X=1)*1)$
 $=\frac{\mu-\mu e^{-\mu}}{1-e^{-\mu}-\mu e^{-\mu}}$
+
+$VarY=(\mu-\mu e^{-\mu})*\frac{1}{1-e^{-\mu}-\mu e^{-\mu}}=\frac{\mu e^{\mu}-\mu}{e^{\mu}-1-\mu}$
 
 ## (4)
 Log likelihood: $\sum_{i=1}^{n}(-\mu+y_iln(\mu)-ln(y_i!)-ln(1-e^{-\mu}-\mu e^{-\mu}))$
@@ -26,7 +33,7 @@ log_mle <- function(miu) {
 }
 miu <- seq(0.8,1.6,0.1)
 mle <- sapply(miu,log_mle)
-ggplot() + geom_line(aes(x = miu, y = mle))
+ggplot() + geom_line(aes(x = miu, y = mle)) + xlab("mu")
 ```
 
 ## (5)
@@ -38,4 +45,33 @@ optim(initial, a <- function(x){return(-log_mle(x))}, method = "BFGS")
 
 We use BFGS. The MLE of $\mu$ is 1.398.
 
+## (6)
 
+$\sqrt{n}(\hat\mu_{MLE}-\mu)\rightarrow^D N(0,I^{-1}(\mu))$
+
+$I(\mu)=-E(\frac{d^2(-\mu+yln(\mu)-ln(y!)-ln(1-e^{-\mu}-\mu e^{-\mu}))}{d\mu^2})$
+
+$=E(\frac{y}{\mu^2}+\frac{e^{\mu}-\mu e^{\mu}-1}{(e^{\mu}-1-\mu)^2})=\frac{(e^{\mu}-1)^2-\mu^2 e^{\mu}}{\mu(e^{\mu}-1-\mu)^2}$
+
+## (7)
+Through the asymptotic distribution of $\mu_{MLE}-\mu$, we can get a 0.95 asymptotic confidence interval.
+
+$[\hat\mu_{MLE}-\frac{Z_{0.975}}{\sqrt{nI(\hat\mu)}},\hat\mu_{MLE}+\frac{Z_{0.975}}{\sqrt{nI(\hat\mu)}}]$
+
+```{r}
+m <- 1.398
+i <- ((exp(m)-1)^2-m^2*exp(m))/m/(exp(m)-1-m)^2
+interval <- qnorm(0.975)/sqrt(sum(data$freq)*i)
+print(c(m-interval,m+interval))
+```
+95% CI is [1.20,1.60]
+
+## (8)
+
+It seems like a reasonable approach without using algorithm such as gradient descent. 
+
+However, this approach can't get many properties of the estimators like bias, consistency and variance. We can only compared the goodness of fit with the other estimators.
+
+## (9)
+
+In the paper $\mu=1.4$, it's almost equal to our estimation $\mu=1.398$. Simonton’s technique is very accurate.
