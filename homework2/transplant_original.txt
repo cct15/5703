@@ -1,3 +1,11 @@
+Data on 50 allotransplant and 51 autotransplants
+See Section 1.9
+Data can be read in free format. The variables represented in the dataset are as follows: 
+
+Time to death or relapse, months 
+Type of transplant (1=allogeneic, 2=autologous) 
+Leukemia-free survival indicator (0=alive without relapse, 1=dead or relapse) 
+THE DATA 
 0.030 1 1
 0.493 1 1
 0.855 1 1

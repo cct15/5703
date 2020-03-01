@@ -1,8 +1,8 @@
 ---
-title: "HW2"
-output:
-  pdf_document: default
-  html_document: default
+title: "Exercise1"
+author: "Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404"
+date: "2/29/2020"
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -10,27 +10,31 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-transplant <- read.table("~/Desktop/stat5703/HW/HW2/transplant.txt", quote="\"", comment.char="")
+transplant <- read.table("./transplant.txt", quote="\"", comment.char="")
 colnames(transplant)<-c("time","type","s")
 ```
 
-####1 
+## (1) 
 Answer:
-We could assume the right censoring in this data set is random
-because the death of the plant will occur after the recorded time.
 
-####2
-```{r}
+We could assume the right censoring in this data set is random, because the death of the plant will occur after the recorded time.
+
+## (2)
+```{r results = 'hide', message=FALSE}
 library(ggfortify)
 library(survival)
 library(dplyr)
 library(ggplot2)
+```
+
+```{r}
 autoplot(survfit(Surv(time, s) ~ type,data=transplant))
 ```
 
 The plot seem to indicate a difference between two groups. Transplant allogeneic seems to be more efficient.
 
-####3
+## (3)
+
 ```{r}
 fit_exp <- survreg(Surv(time,s)~type, dist="exp",data=transplant)
 summary(fit_exp)
@@ -38,11 +42,12 @@ summary(fit_exp)
 
 From the summary table, we can see that the estimated value of autologous is a negative value (-0.325). Which means Transplant autologous would cause less survival time. This result is consistant with our previous observation. 
 
-####4
+## (4)
+
 From summary table, we get the p value is 0.25 which is larger than normal thresholds 0.05. So there is no strong evidence against the null hypothesis :there is no difference between the transplant type. These conclusion depend on the assumption of exponential parametric model and asymptotic approximation to the distribution of the likelihood ratio statistic.
 
 
-####5
+## (5)
 ```{r}
 fit<- survfit(Surv(time,s)~type,data=transplant)
 par(mfrow=c(1,1))
@@ -61,6 +66,7 @@ From the graph, we can see that exponential model does great to fit. Most time t
 fit_wei <- survreg(Surv(time,s)~type,data=transplant)
 summary(fit_wei)
 ```
+
 ```{r}
 par(mfrow=c(1,1))
 plot(fit,col=c("red","blue"),xlab="Days",conf.int=TRUE,main="Survival times")
