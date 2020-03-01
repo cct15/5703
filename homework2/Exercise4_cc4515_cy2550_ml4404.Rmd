@@ -1,0 +1,66 @@
+---
+title: "Exercise4"
+author: "Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404"
+date: "2/29/2020"
+output: pdf_document
+---
+
+## (1)
+
+$p(N_A,N_C,N_G,N_T)={N\choose N_A}{N-N_A\choose N_C}{N-N_A-N_C\choose N_G}p_A^{N_A}p_C^{N_C}p_G^{N_G}p_T^{N_T}$
+
+## (2)
+
+$\frac{\partial log(p)}{\partial \theta}=-N_A\frac{1}{1-\theta}+N_C\frac{1-2\theta}{\theta-\theta^2}+N_G\frac{2\theta-3\theta^2}{\theta^2-\theta^3}+N_T\frac{3\theta^2}{\theta^3}\\=-N_A\frac{1}{1-\theta}+N_C\frac{1-2\theta}{\theta-\theta^2}+N_G\frac{2-3\theta}{\theta-\theta^2}+N_T\frac{3}{\theta}=0$
+
+So $(N_A+2N_C+3N_G+3N_T)\theta=N_C+2N_G+3N_T$
+
+$\hat\theta_{MLE}=\frac{N_{C}+2 N_{G}+3 N_{T}}{N_{A}+2 N_{C}+3 N_{G}+3 N_{T}}$
+
+## (3)
+
+$I_n(\theta)=-E(\frac{\partial^2 L(\theta;N_A,N_C,N_G,N_T)}{\partial \theta^2})=-E(\frac{-b\theta+2a\theta-a}{(1-\theta)^2\theta^2})$
+
+$a=N_C+2N_G+3N_T$, $b=N_A+2N_C+3N_G+3N_T$
+
+So $E(a)=N(1+\theta+\theta^2)\theta$, $E(b)=N(1+\theta+\theta^2)$
+
+Then $I(\theta)=I_n(\theta)/N=\frac{1+\theta+\theta^2}{(1-\theta)\theta}$
+
+So $\sqrt{N}(\hat\theta-\theta)\rightarrow^DN(0,\frac{(1-\theta)\theta}{(1+\theta+\theta^2)})$
+
+## (4)
+
+$a_A=0$, $a_C=\frac{1}{N}$, $a_G=\frac{1}{N}$, $a_T=\frac{1}{N}$
+
+Then $ET=\frac{E(N_C+N_G+N_T)}{N}=\frac{N(\theta-\theta^2)+N(\theta^2-\theta^3)+N\theta^3}{N}=\theta$
+
+## (5)
+
+So $VarT=Var(N-N_A)/N^2=VarN_A/N^2=\frac{(1-\theta)\theta}{N}$
+
+The asymptotic MSE of $\hat\theta$ is
+
+$MSE(\hat\theta)=Var\hat\theta+bias(\hat\theta,\theta)^2\rightarrow^D\frac{(1-\theta)\theta}{N(1+\theta+\theta^2)}$
+
+$MSE(T)=\frac{(1-\theta)\theta}{N}$
+
+So $Eff(\hat\theta,T)=\frac{1}{1+\theta+\theta^2}$
+
+## (6)
+
+Without $\theta$, the MLE of p is
+
+$\hat p_A=\frac{N_A}{N}$, $\hat p_C=\frac{N_C}{N}$, $\hat p_G=\frac{N_G}{N}$, $\hat p_T=\frac{N_T}{N}$
+
+With $\theta$, the MLE of p is
+
+$\hat p_A=1-\hat\theta$, $\hat p_C=\hat\theta-\hat\theta^2$, $\hat p_G=\hat\theta^2-\hat\theta^3$, $\hat p_T=\hat\theta^3$
+
+For estimator T, if $a_A=0$, $a_C=a_G=a_T=\frac{1}{n}$, the estimator of $p_A$ is same as the estimator of $p_A$ without $\theta$.
+
+## (7)
+
+We can use the likelihood ratio test (under $H_0$ we have): 
+
+$\Lambda_{n}=2\left(\log L_{n}(\hat{\theta})-\log L_{n}\left(\hat{\theta}^{c}\right)\right) \\ =2(N_Alog\frac{N_A}{N}+N_Clog\frac{N_C}{N}+N_Glog\frac{N_G}{N}+N_Tlog\frac{N_T}{N}-N_Alog(1-\theta)-N_Clog(\theta-\theta^2)-N_Glog(\theta^2-\theta^3)-N_Tlog(\theta^3))\rightarrow^D\chi^2_4$
