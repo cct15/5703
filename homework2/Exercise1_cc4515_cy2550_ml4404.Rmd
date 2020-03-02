@@ -17,7 +17,7 @@ colnames(transplant)<-c("time","type","s")
 ## (1) 
 Answer:
 
-We could assume the right censoring in this data set is random, because the death of the plant will occur after the recorded time.
+We could assume the right censoring in this data set is random, because the death of the plant will occur after the recorded time, and we could not see any obvious pattern about the recording time, so random assumption seems reasonalble.
 
 ## (2)
 ```{r results = 'hide', message=FALSE}
