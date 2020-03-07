@@ -1,0 +1,187 @@
+---
+title: "Homework 2 Exercise 2"
+author: "Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404"
+date: "2020/3/5"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r, include=FALSE}
+data <- read.table("scores.txt", header = TRUE, sep = "")
+data
+```
+```{r complete case analysis, include = FALSE}
+cov1 <- cov(data, use = "complete.obs")
+```
+\tiny
+```{r}
+cov1 #Complete case analysis
+```
+
+```{r, include = FALSE}
+cov2 <- cov(data, use = "pairwise.complete.obs")
+```
+```{r}
+cov2 #Available case analysis 
+```
+```{r,include=FALSE}
+data_mi = sapply(data, function(i) ifelse(is.na(i), mean(i, na.rm=TRUE), i))
+cov3 <- cov(data_mi, use = "complete.obs")
+```
+```{r}
+cov3 #Mean imputation
+```
+```{r, include=FALSE}
+data_mi
+```
+```{r, include=FALSE}
+cov4 = matrix(0,5,5)
+n=100
+for (j in 1:n)
+{
+  temp <- sample(nrow(data), 22, replace = TRUE)
+  newdata <- sapply(data[temp,], function(i) ifelse(is.na(i), mean(i, na.rm=TRUE), i))
+  cov4 <- cov4 + cov(newdata, use = "complete.obs")
+}
+cov4<- cov4/n
+```
+```{r}
+cov4 #Mean imputation with the bootstrap
+```
+```{r, include=FALSE}
+# log likelihood function
+LL <- function(sigma,Y)
+{
+  W <- sigma%x%diag(nrow(Y)) # covariance matrix
+  isna <- which(is.na(Y)) # which data are NA
+  if(length(isna)>0) W <- W[-isna,-isna] # remove NAs from W
+  X <- matrix(0,nrow(Y)*ncol(Y),ncol(Y))
+  for(i in 1:ncol(Y)) X[1:nrow(Y)+(i-1)*nrow(Y),i] <- 1 # design matrix
+  if(length(isna)>0) X <- X[-isna,] # remove NAs from X
+
+  # mean vector
+  mu <- t(solve(t(X)%*%solve(W)%*%X)%*%t(X)%*%solve(W)%*%na.exclude(as.double(Y)))
+
+  # log-likelihood
+  logl <- -.5*(length(as.double(Y[!is.na(Y)]))*log(2*pi) + 
+         determinant(W)$modulus[[1]] + 
+         na.exclude(as.double(Y-matrix(1,nrow(Y))%*%mu)) %*% solve(W) %*% 
+         na.exclude(as.double(Y-matrix(1,nrow(Y))%*%mu)))
+  logl
+}
+
+# build 2x2 positive definite covariance matrix
+buildmat <- function(x)
+{
+  mat <- matrix(0,2,2)
+  mat[lower.tri(mat,diag=TRUE)] <- x
+  tcrossprod(mat)
+}
+
+set.seed(4)
+
+dat_missing <- data.matrix(data)
+
+
+dat_impute <- dat_missing # data matrix for imputation
+missing_ind <- which(is.na(dat_missing[,1])) # index of missing values
+dat_impute[missing_ind,1] <- mean(na.exclude(dat_missing[,1]))
+
+# EM imputation
+while(sum(abs(dat_impute[missing_ind,1]-predict(lm(dat_impute[,1]~dat_impute[,2:4]))[missing_ind])>1e-32))
+  dat_impute[missing_ind,1] <- predict(lm(dat_impute[,1]~dat_impute[,2:4]))[missing_ind]
+
+
+missing_ind <- which(is.na(dat_missing[,5])) # index of missing values
+dat_impute[missing_ind,5] <- mean(na.exclude(dat_missing[,5]))
+
+# EM imputation
+while(sum(abs(dat_impute[missing_ind,5]-predict(lm(dat_impute[,5]~dat_impute[,1:4]))[missing_ind])>1e-32))
+  dat_impute[missing_ind,5] <- predict(lm(dat_impute[,5]~dat_impute[,1:4]))[missing_ind]
+
+# compare covariance of augmented data to ML estimate
+cov_em = cov(dat_impute)
+```
+```{r}
+cov_em #The EM-algorithm
+```
+\normalsize
+The covariance matrix of Mean imputation and Mean imputation with the bootstrap are quite similar. The covariance matrix of Complete case analysis is the largest one.
+
+## Question 2
+
+Since $\sqrt{n}\left(\hat{\lambda}_{1}-\lambda_{1}\right) \rightarrow N\left(0,2 \lambda^{2}\right)$, we have $\hat{\lambda}_{1} \sim N\left(\lambda_{1}, \frac{2 \lambda^{2}}{n}\right)$. So, $$P\left[-Z_{1-\frac{\alpha}{2}} \leq \frac{\hat{\lambda}_{1}-\lambda_{1}}{\sqrt{\frac{2 \hat\lambda_{1}^{2}}{n}}} \leq Z_{1-\frac{\alpha}{2}}\right]=1-\alpha$$
+$$
+-\frac{Z_{1-\frac{\alpha}{2}} \sqrt{2} \hat\lambda_{1}}{\sqrt{n}} \leq \hat{\lambda}_{1}-\lambda_{1} \leq \frac{Z_{1-\frac{\alpha}{2}} \sqrt{2} \hat\lambda_{1}}{\sqrt{n}}
+$$
+$$
+\hat \lambda_{1}-\frac{Z_{1-\frac{\alpha}{2}} \sqrt{2} \hat\lambda_{1}}{\sqrt{n}} \leq {\lambda}_{1} \leq \hat \lambda_{1} + \frac{Z_{1-\frac{\alpha}{2}} \sqrt{2} \hat\lambda_{1}}{\sqrt{n}}
+$$
+```{r, include=FALSE}
+get_interval <- function(lambda){
+  mu = lambda
+  print(paste0('Left: ', mu-1.96*sqrt(2/nrow(data))*mu , 
+  ' Right: ', mu+1.96*sqrt(2/nrow(data))*mu))
+}
+```
+\tiny
+```{r}
+get_interval(max(eigen(cov1)$value))#Complete case analysis
+get_interval(max(eigen(cov2)$value))#Available case analysis
+get_interval(max(eigen(cov3)$value))#Mean imputation
+get_interval(max(eigen(cov4)$value))#Mean imputation with the bootstrap
+get_interval(max(eigen(cov_em)$value))#The EM-algorithm
+```
+\normalsize
+The interval of Mean imputation and Mean imputation with the bootstrap are similar. Available case analysis and The EM-algorithm are also close. We need to see the full data to check their performance.
+
+## Question 3
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+library(SMPracticals)
+data('mathmarks')
+cov6 <- cov(mathmarks, use = "complete.obs")
+```
+```{r}
+cov6 #full data
+get_interval(max(eigen(cov6)$value))
+```
+Compared each method with the full data, the EM-algorithm is the best fit for the data. Since the size of the sample is small (only 22), it would make more sense if we test on a larger sample.
+
+## Question 4
+
+$$\begin{aligned}
+\ell_{i}\left(\boldsymbol{\mu}, \mathbf{\Sigma} | \mathbf{x}_{i}\right) &=-\frac{p}{2} \log 2 \pi-\frac{1}{2} \log \operatorname{det} \boldsymbol{\Sigma}-\frac{1}{2}\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right)^{T} \boldsymbol{\Sigma}^{-1}\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right) \\
+&=-\frac{p}{2} \log 2 \pi-\frac{1}{2} \log \operatorname{det} \boldsymbol{\Sigma}-\frac{1}{2} \operatorname{tr}\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right)\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right)^{T} \boldsymbol{\Sigma}^{-1}
+\end{aligned}$$
+We have the derivative partial
+$$\begin{aligned}
+\frac{\partial}{\partial \boldsymbol{\mu}} \ell_{i}\left(\boldsymbol{\mu}, \mathbf{\Sigma} | \mathbf{x}_{i}\right) &=-\boldsymbol{\Sigma}^{-1}\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right) \\
+\frac{\partial}{\partial \boldsymbol{\Sigma}} \ell_{i}\left(\boldsymbol{\mu}, \boldsymbol{\Sigma} | \mathbf{x}_{i}\right) &=-\frac{1}{2} \boldsymbol{\Sigma}^{-1}+\frac{1}{2} \boldsymbol{\Sigma}^{-1}\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right)\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right)^{T} \boldsymbol{\Sigma}^{-1} \\
+&=\frac{1}{2} \boldsymbol{\Sigma}^{-1}\left(\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right)\left(\mathbf{x}_{i}-\boldsymbol{\mu}\right)^{T}-\boldsymbol{\Sigma}\right) \boldsymbol{\Sigma}^{-1}
+\end{aligned}$$
+We can easily derive the equation
+$$\mu^{(k+1)}: \sum_{i=1}^{n}\left(\hat{X}_{i}-\mu\right)=0$$
+For the second equation,with
+$$E\left(X_{i m} | X_{i o}\right)=\mu_{i m}^{(k)}+\Sigma_{i m o}^{(k)}\left(\Sigma_{i o o}^{(k)}\right)^{-1}\left(X_{i o}-\mu_{i o}^{(k)}\right)$$
+$$\mathbf{C}_{i m m}^{(k)}=\Sigma_{i m m}^{(k)}-\Sigma_{i m o}^{(k)}\left(\Sigma_{i o o}^{(k)}\right)^{-1} \Sigma_{i o m}^{(k)} = E\left(X_{i m} X_{i m}^{\prime} | X_{i o}\right)$$
+We can get
+$$\sum_{i=1}^{n} \Sigma^{-1}\left(\Sigma-\left(\boldsymbol{\mu}-\hat{\mathbf{x}}_{i}\right)\left(\boldsymbol{\mu}-\hat{\mathbf{x}}_{i}\right)^{T}-\mathbf{C}_{i}\right) \boldsymbol{\Sigma}^{-1}=0$$
+$$\Sigma^{(k+1)}: \sum_{i=1}^{n}\left(\Sigma-\left(\hat{X}_{i}-\mu\right)\left(\hat{X}_{i}-\mu\right)^{T}-\mathbf{C}_{i}^{(k)}\right)=0$$
+
+
+
+
+
+
+
+
+
+
