@@ -1,0 +1,67 @@
+---
+title: "Exercise4"
+author: "Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404"
+date: "4/12/2020"
+output: pdf_document
+---
+
+# (1)
+
+$Var(\delta_i)=\mathbb{E}\left[\left(\hat{Y}_{i}-\mathbb{E}\left[Y_{i}\right]\right)^{2}\right]-\mathbb{E}\left[\hat{Y}_{i}-\mathbb{E}\left[Y_{i}\right]\right]^{2}$
+
+So $\mathbb{E}\left[\operatorname{RSS}(\hat{\mathbf{Y}})-\sum_{i=1}^{n} \operatorname{var}\left(\hat{\varepsilon}_{i}\right)+\sum_{i=1}^{n} \operatorname{var}\left(\delta_{i}\right)\right]\\=\sum_{i=1}^n(\operatorname{E}[\left(Y_{i}-\hat{Y}_{i}\right)]^2+\mathbb{E}\left[\left(\hat{Y}_{i}-\mathbb{E}\left[Y_{i}\right]\right)^{2}\right]-\mathbb{E}\left[\hat{Y}_{i}-\mathbb{E}\left[Y_{i}\right]\right]^{2})\\=\mathbb{E}\left[\sum_{i=1}^{n}\left(\hat{Y}_{i}-\mathbb{E}\left[Y_{i}\right]\right)^{2}\right]$
+
+($\operatorname{E}[\left(Y_{i}-\hat{Y}_{i}\right)]=0$, $\mathbb{E}\left[\hat{Y}_{i}-\mathbb{E}\left[Y_{i}\right]\right]=0$)
+
+So $\Gamma=\frac{1}{\sigma^{2}} \mathbb{E}\left[\sum_{i=1}^{n}\left(\hat{Y}_{i}-\mathbb{E}\left[Y_{i}\right]\right)^{2}\right]$
+
+# (2)
+
+Let $\mathbf{\hat\delta}=\hat{\mathbf{Y}}-\mathbb{E}\left[\mathbf{Y}\right]$, $\mathbf{\hat\epsilon}=\mathbf{Y}-\hat{\mathbf{Y}}$.
+
+Then $\mathbf{\hat\epsilon}=(\mathbf{I}-\mathbf{S})\mathbf{Y}$, $\mathbf{\hat\delta}=\mathbf{SY}-\mathbb{E}\left[\mathbf{Y}\right]$.
+
+So $\sigma^{2} \Gamma=\mathbb{E}\left[\operatorname{RSS}(\hat{\mathbf{Y}})-\sum_{i=1}^{n} \operatorname{var}\left(\hat{\varepsilon}_{i}\right)+\sum_{i=1}^{n} \operatorname{var}\left(\delta_{i}\right)\right]\\=\mathbb{E}\left[\operatorname{RSS}(\hat{\mathbf{Y}})-tr(\operatorname{Var}(\mathbf{\hat\epsilon}))+tr(\operatorname{Var}(\mathbf{\hat\delta}))\right]$
+
+$tr(\operatorname{Var}(\mathbf{\hat\epsilon}))=tr((\mathbf{I}-\mathbf{S})^T\operatorname{Var}(\mathbf{Y})(\mathbf{I}-\mathbf{S}))=\sigma^2tr(\mathbf{S}^T\mathbf{S}-\mathbf{S}^T-\mathbf{S}+\mathbf{I})$
+
+$tr(\operatorname{Var}(\mathbf{\hat\delta}))=tr(\operatorname{Var}(\mathbf{SY}))=\sigma^2tr(\mathbf{S}^T\mathbf{S})$
+
+So $\sigma^{2} \Gamma=\mathbb{E}\left[\operatorname{RSS}(\hat{\mathbf{Y}})-\sum_{i=1}^{n} \operatorname{var}\left(\hat{\varepsilon}_{i}\right)+\sum_{i=1}^{n} \operatorname{var}\left(\delta_{i}\right)\right]\\=\mathbb{E}\left[\operatorname{RSS}(\hat{\mathbf{Y}})+\sigma^2tr(2\mathbf{S}-\mathbf{I})\right]=\operatorname{RSS}(\hat{\mathbf{Y}})+2\sigma^2 \operatorname{tr}(\mathbf{S})-\sigma^2n=\sigma^2C$
+
+So C is an unbiased estimator of $\Gamma$
+
+# (3)
+
+Because $\hat{\boldsymbol{\beta}}=\left(\mathbf{X}^{\top} \mathbf{X}\right)^{-1} \mathbf{X}^{\top} \mathbf{Y}$, $\mathbf{S}=\mathbf{X}\left(\mathbf{X}^{\top} \mathbf{X}\right)^{-1} \mathbf{X}^{\top}$
+
+$tr(\mathbf{S})=tr( \mathbf{X}^{\top}\mathbf{X}\left(\mathbf{X}^{\top} \mathbf{X}\right)^{-1})=tr(\mathbf{I})=p$
+
+So $C_{p}=\frac{1}{\sigma^{2}} \operatorname{RSS}(\hat{\mathbf{Y}})+2 p-n$
+
+Note that $\operatorname{AIC}(\hat{\boldsymbol{\beta}})=n \log S S(\hat{\boldsymbol{\beta}})+2 p$ and here SS is the same as RSS.
+
+So AIC and $C_p$ are both based on RSS and p.
+
+# (4)
+
+$\operatorname{P}(\mathrm{AIC}\left(\hat{\boldsymbol{\beta}}_{q+1}\right)<\mathrm{AIC}\left(\hat{\boldsymbol{\beta}}_{q}\right))=\operatorname{P}(nlog(\frac{SS(\hat\beta_{q+1})}{SS(\hat\beta_q)})<-2)$
+
+Because $SS(\hat\beta_q)\sim\sigma^2\chi^2_{n-q}$, $SS(\hat\beta_{q+1})\sim\sigma^2\chi^2_{n-q-1}$ and they're independent. 
+
+$SS(\hat\beta_q)-SS(\hat\beta_{q+1})\sim\sigma^2\chi^2_{1}$
+
+$\frac{SS(\hat\beta_{q+1})}{SS(\hat\beta_q)}\sim 1-F_{1,n-q}/(n-q)=1-t_{n-q}^2/(n-q)$
+
+Then $P=P(\frac{SS(\hat\beta_{q+1})}{SS(\hat\beta_q)}<e^{-2/n})\approx P(\frac{SS(\hat\beta_{q+1})}{SS(\hat\beta_q)}<1)\\=P(1-t_{n-q}^2/(n-q)<1)=P(t_{n-q}^2>0)=1$
+
+Then proved.
+
+# (5)
+
+Same reason,
+
+$\operatorname{P}(\mathrm{BIC}\left(\hat{\boldsymbol{\beta}}_{q+1}\right)<\mathrm{BIC}\left(\hat{\boldsymbol{\beta}}_{q}\right))=\operatorname{P}(nlog(\frac{SS(\hat\beta_{q+1})}{SS(\hat\beta_q)})<-logn)\\=P(nlog(1-t_{n-q}^2/(n-q))<-logn)\approx P(-nt_{n-q}^2/(n-q)<-logn)\\=P(t_{n-q}^2>logn)=0$
+
+Proved.
+

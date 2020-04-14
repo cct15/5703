@@ -1,0 +1,167 @@
+---
+title: "exercise5"
+author: "Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404"
+date: "4/13/2020"
+output: pdf_document
+---
+
+# (1)
+```{r}
+library(SMPracticals)
+data = pollution
+```
+
+```{r}
+pairs(pollution)
+```
+
+```{r}
+pairs(pollution[,c(1:3,15:16)]) # association of mortality with weather
+```
+```{r}
+pairs(pollution[,c(4:11,16)])   # and social factors
+```
+
+```{r}
+pairs(pollution[,c(12:14,16)])  # and pollution measures
+```
+
+There are some outliers in the dataset. We need to remove outliers or use log transformation in the dataset. For transformation on features and responses, it seems many features don't have linear relation with response. We can use Box-Cox transformation.
+
+We can see clusters in the scatter plot of air pollution and mortality. It's hard for us to interpret the relation between them with linear model.
+
+# (2)
+
+```{r}
+fit <- step(glm(mort~.-hc-nox-so,data=pollution))
+```
+
+```{r}
+library(EnvStats)
+boxcox(fit)
+```
+
+```{r}
+plot.glm.diag(fit) # model adequate?
+```
+
+```{r}
+summary(fit)
+```
+
+
+```{r}
+fit <- update(fit,log(mort)~.) # try log transform of response plot.glm.diag(fit) # model adequate?
+summary(fit)
+```
+
+```{r}
+plot.glm.diag(fit) # model adequate?
+```
+
+We can see that both model (take log and not) are adequate. However, taking log on response can help us to deal with outliers. So we prefer taking log.
+
+```{r}
+fit_all <- lm(log(mort)~.-hc-nox-so,data=pollution)
+summary(fit_all)
+```
+
+```{r}
+fit_least <- lm(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw, data = pollution)
+summary(fit_least)
+```
+
+We can see that the step eliminates some insignificant features and imporves the adjusted R-square. So we use the features selected by step.
+
+As we mentioned before, we think log transformation is good for the data. So we will choose log model with selected features.
+
+# (3)
+```{r}
+pairs(resid(lm(cbind(log(mort),hc,nox,so)~.,data=pollution)))
+```
+
+The scatter plots all show a large cluster and it seems inappropriate to use linear regression on it. 
+
+There are outliers in all three pollution.
+
+In all pollutions, SO has the strongest linear relation. 
+
+```{r}
+fit_so <- lm(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so, data = pollution)
+summary(fit_so)
+```
+
+We can see the model is improved. R-squared increases.
+
+Then we try to add the other two features.
+
+```{r}
+fit_so_nox_hc <- lm(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so + nox + hc, data = pollution)
+summary(fit_so_nox_hc)
+```
+
+Adding the two features doesn't improve the model. We try to adjust the model with taking log on nox and hc.
+
+```{r}
+fit_so_nox_hc <- lm(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so + log(nox) + log(hc), data = pollution)
+summary(fit_so_nox_hc)
+```
+We can see that the model improves after taking log on nox and hc.
+
+# (4)
+
+```{r}
+library(MASS)
+```
+
+
+```{r}
+rfit <- lm.ridge(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so + log(nox) + log(hc),data=pollution,lambda=seq(0,20,0.01)) 
+plot(rfit)
+```
+
+```{r}
+select(rfit)
+```
+
+These three estimators are three estimations of the ridge constants.
+
+```{r}
+coef(rfit)[which.min(rfit$GCV),]
+```
+
+# (5)
+```{r}
+fit_lqs <- lqs(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so + log(nox) + log(hc), data = pollution)
+fit_lqs
+```
+
+```{r}
+fit_lqs <- lqs(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so, data = pollution)
+fit_lqs
+```
+
+```{r}
+fit_lqs <- lqs(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so + nox + hc, data = pollution)
+fit_lqs
+```
+
+Compared using scale estimates, the model with all pollutions and taking log on nox and hc is better. It's also the best model before.
+
+
+```{r}
+fit_rlm <- rlm(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so + log(nox) + log(hc), data = pollution)
+summary(fit_rlm)
+```
+
+```{r}
+fit_rlm <- rlm(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so, data = pollution)
+summary(fit_rlm)
+```
+
+```{r}
+fit_rlm <- rlm(log(mort) ~ prec + jant + jult + popn + educ + dens + nonw + so + nox + hc, data = pollution)
+summary(fit_rlm)
+```
+
+Using robust M-estimation, the best model is using all pollutions and not taking log on it. It's different from that before.
