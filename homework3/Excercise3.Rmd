@@ -1,0 +1,82 @@
+---
+title: "Q3"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Question 1 
+We could use linear model to fit this dataset. In this dataset, age, education and experience are all time related features. They all have strict linear relation with year. In other words they are highly correlated with each other. If we include them in the same time the model would become colinearity.
+
+#### Question2
+
+```{r}
+df<- read.table("CpsWages.txt",header = T)
+```
+
+```{r}
+lm1 <- lm(wage~.-education-experience,data = df)
+
+```
+
+
+```{r}
+plot(lm1)
+```
+
+From the plot of residual vs fitted we cannot see any distict pattern so the hypothesis is satisfied, but from the QQ plot we can see much departure form the right tail so the residules may not follow a normal distribution.
+
+#### Question3
+```{r}
+summary(lm1)
+
+```
+
+From the summary of lm1 we can see sector and marr are not significant since their p value are larger than 0.05.
+
+Like all other features, We use t-test to test whether‘sector’ is significant or not. From the table, we get the p-value from t-test for ‘sector’ is 0.547869 which is much larger than 0.05. So we fail to reject null hypothesis and conclude that the parameter ‘sector’
+is not significant.
+
+#### Question4
+```{r}
+library(MASS)
+stepAIC(lm(wage~.,data = df),k = log(nrow(df)))
+```
+With the stepwise bic approch we find a simpler model as formula = wage ~ education + sex + experience + union. This model has BIC = 1614, which is much smaller than the original full model as BIC = 1640.48.
+
+#### Question5
+```{r}
+lm2 <-lm(formula = wage ~ education + sex + experience + union, data = df)
+summary(lm2)
+```
+```{r}
+plot(lm2)
+```
+```{r}
+boxcox(wage ~ education + sex + experience + union, data = df)
+```
+
+The QQ plot still have heavey tail, which indicate the abnormaluty of the residual. From box-cox plot, we can see that lambda=0 lies inside the confidence interval. So log transformation seems resonable. 
+```{r}
+lm3 <-lm(log(wage) ~ education + sex + experience + union, data = df)
+summary(lm3)
+```
+```{r}
+plot(lm3)
+```
+From the plot above we can see the residual seems uncorrelated , indipendent and follow a normal trend.
+Also, from the summary table, all of parameters are statistically
+significant as all of their p-values are smaller than 0.05. So this simplied model is adequate.
+
+#### Question6 
+```{r}
+df <- df[-c(171,200),]
+lm3 <-lm(log(wage) ~ education + sex + experience + union, data = df)
+summary(lm3)
+```
+
+The result seems improved since the residual standard of error decreased and the R-square improved. From previous residual plot we can see the 171th and 200th point are outlier， which have adnormal large residual. Therefore remove these two points would improve our model performance. 
