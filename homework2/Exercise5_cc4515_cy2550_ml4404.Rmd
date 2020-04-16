@@ -5,26 +5,108 @@ date: "3/1/2020"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+transplant2 <- read.table("./transplant.txt", quote="\"", comment.char="")
+colnames(transplant2)<-c("time","type","s")
 ```
 
-## R Markdown
+## (1)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Because the failure rate doesn't dependent on the number of individuals.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Let the probability of individuals that die/relapse be $p_A^{(k)}=p_B^{(k)}=p$ (under $H_0$).
 
-```{r cars}
-summary(cars)
+So $P(y^{(k)}=m,n_d^{(k)}=m_d|n_A^{(k)}=m_A,n_B^{(k)}=m_B)={m_A\choose m}p^m(1-p)^{m_A-m}{m_B\choose m_d-m}p^{m_d-m}(1-p)^{m_B-m_d+m}={m_A\choose m}{m_B\choose m_d-m}p^{m_d}(1-p)^{m_A+m_B-m_d}$
+
+$P(n_d^{(k)}=m_d|n_A^{(k)}=m_A,n_B^{(k)}=m_B)={m_A+m_B\choose m_d}p^{m_d}(1-p)^{m_A+m_B-m_d}$
+
+So $P(y^{(k)}=m|n_d^{(k)}=m_d,n_A^{(k)}=m_A,n_B^{(k)}=m_B) \\ =\frac{P(y^{(k)}=m,n_d^{(k)}=m_d|n_A^{(k)}=m_A,n_B^{(k)}=m_B)}{P(n_d^{(k)}=m_d|n_A^{(k)}=m_A,n_B^{(k)}=m_B)}=\frac{{m_A\choose m}{m_B\choose m_d-m}}{{m_A+m_B\choose m_d}}$
+
+It's $\text {HyperGeometric}\left(n_{A}^{(k)}+n_{B}^{(k)}, n_{A}^{(k)}, n_{d}^{(k)}\right)$.
+
+## (2)
+
+$P=\frac{{n_A\choose y}{n_B\choose n_d-y}}{{n\choose n_d}}$
+
+Let $Y_{i}=\left\{\begin{array}{ll} 1 & \text { if the } i \text { th selection is under treatment A } \\ 0 & \text { otherwise } \end{array}\right.$
+
+So $P(Y_i=1)=\frac{n_A}{n}$, $P(Y_i=1,Y_j=1)=\frac{n_A}{n}\frac{n_A-1}{n}$
+
+$E^{(k)}=E(\sum Y_i)=n_dEY=\frac{n_{A}^{(k)} n_{d}^{(k)}}{n^{(k)}}$
+
+$Var^{(k)}=Var(\sum Y_i)=n_dVarY+n_d(n_d-1)Cov(Y_i,Y_j)$
+
+$VarY=\frac{n_An_B}{n^2}$, $Cov(Y_i,Y_j)=EY_iY_j-EY_iEY_j=P(Y_i=1,Y_j=1)-(\frac{n_A}{n})^2=-\frac{n_An_B}{n^2(n-1)}$
+
+Then $Var^{(k)}=\frac{n_An_Bn_d}{n^2}-\frac{n_An_Bn_d(n_d-1)}{n^2(n-1)}=\frac{n_{A}^{(k)} n_{B}^{(k)} n_{d}^{(k)} n_{s}^{(k)}}{\left(n^{(k)}\right)^{2}\left(n^{(k)}-1\right)}$
+
+## (3)
+
+Let condition $\left(n_{A}^{(k)}, n_{B}^{(k)}, n_{d}^{(k)}\right)$ be $C_i$.
+
+$\operatorname{Var}\left[y^{(k)}-E^{(k)}\right]=\operatorname{Var}[\mathbb{E}[y^{(k)}-E^{(k)}| C_i]]+\mathbb{E}[\operatorname{Var}[y^{(k)}-E^{(k)}| C_i]]$
+
+As we showed in (2), $\mathbb{E}[y^{(k)}-E^{(k)}| C_i]=0$, $\operatorname{Var}[y^{(k)}-E^{(k)}| C_i]=V^{(k)}$.
+
+So $\operatorname{Var}\left[y^{(k)}-E^{(k)}\right]=E[V^{(k)}]$
+
+## (4)
+
+$\operatorname{Var}\left[\sum_{k=1}^{K}\left(y^{(k)}-E^{(k)}\right)\right]=\sum_{k=1}^{K} \operatorname{Var}\left[y^{(k)}-E^{(k)}\right]+2\sum_{i=1}^{K-1}\sum_{j=i+1}^{K}\operatorname{Cov}\left[y^{(i)}-E^{(i)},y^{(j)}-E^{(j)}\right]$
+
+Let the condition $\left(n_{A}^{(i)}, n_{B}^{(i)}, n_{d}^{(i)},n_{A}^{(j)}, n_{B}^{(j)}, n_{d}^{(j)}\right)$ be $C_{ij}$
+
+With Law of Total Variance, we can get
+
+$\operatorname{Cov}\left[y^{(i)}-E^{(i)},y^{(j)}-E^{(j)}\right] \\ =\operatorname{Cov}[\mathbb{E}[y^{(i)}-E^{(i)}| C_{ij}],\mathbb{E}[y^{(j)}-E^{(j)}| C_{ij}]]+\mathbb{E}[\operatorname{Cov}[y^{(i)}-E^{(i)},y^{(j)}-E^{(j)}| C_{ij}]]$
+
+$\mathbb{E}[y^{(i)}-E^{(i)}| C_{ij}]=\mathbb{E}[y^{(i)}-E^{(i)}| C_i]=0$
+
+So $\operatorname{Cov}[\mathbb{E}[y^{(i)}-E^{(i)}| C_{ij}],\mathbb{E}[y^{(j)}-E^{(j)}| C_{ij}]]=Cov(0,0)=0$
+
+$\operatorname{Cov}[y^{(i)}-E^{(i)},y^{(j)}-E^{(j)}| C_{ij}]=\operatorname{Cov}[y^{(i)},y^{(j)}| C_{ij}]$
+
+Under the condition $C_{ij}$, $y^{(i)},y^{(j)}$ are two independent hyperGeometric distributions, so the covariance of them is 0.
+
+Then $\operatorname{Cov}\left[y^{(i)}-E^{(i)},y^{(j)}-E^{(j)}\right]=0 \;\;\forall i\neq j$
+
+So $\operatorname{Var}\left[\sum_{k=1}^{K}\left(y^{(k)}-E^{(k)}\right)\right]=\sum_{k=1}^{K} \operatorname{Var}\left[y^{(k)}-E^{(k)}\right]=\sum_{k=1}^{K} \mathbb{E}\left[V^{(k)}\right]$
+
+## (5)
+
+```{r message=FALSE}
+library(dplyr)
 ```
 
-## Including Plots
+```{r}
+n <- nrow(transplant2)
+k <- nrow(transplant2 %>% filter(s==1))
+na <- nrow(transplant2 %>% filter(type==1))
+nb <- nrow(transplant2 %>% filter(type==2))
+df <- transplant2[order(transplant2$time),]
+df <- df %>% filter(s==1)
+y = c()
+e = c()
+v = c()
+for (i in 1:k) {
+  
+  e[i] <- na/(na+nb)
+  v[i] <- na*nb*(na+nb-1)/(na+nb)^2/(na+nb-1)
+  
+  if (df$type[i]==1) {
+    y[i] <- 1
+    na <- na - 1
+  } else {
+    y[i] <- 0
+    nb <- nb - 1
+  }
+}
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+z <- sum(y-e)/sqrt(sum(v))
+print(pnorm(z))
 ```
+We can accept $H_0$ at 0.05 significant level.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
