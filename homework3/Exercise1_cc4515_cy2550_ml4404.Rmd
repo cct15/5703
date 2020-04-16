@@ -1,0 +1,119 @@
+---
+title: "Homework 3 Exercise 1"
+author: "Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404"
+date: "2020/4/16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+```{r}
+library(dplyr)
+milk <- read.csv("milk.csv", sep = ",", header = TRUE, 
+                 col.names = c("Month", "Production"))
+```
+
+```{r}
+library(lubridate)
+milk <- milk %>% 
+  mutate(Month=ymd(Month, truncated = 1)) %>% 
+  mutate(Row=row_number())
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(milk, aes(x=Month, y=Production)) + 
+  geom_line() + 
+  geom_smooth(method = "lm") +
+  theme_bw()
+```
+```{r}
+milk.lm <- lm(Production ~ Row, milk)
+milk.lm
+```
+```{r}
+res = resid(milk.lm)
+plot(milk$Row, res, 
+    ylab="Residuals", xlab="Row")
+abline(0, 0)
+```
+
+We make the regression with index instead of the timestamp. We can find a good inceasing trend through this linear regression. Also, the residuals seem to have a random value with mean = 0.
+
+
+## Question 2
+
+```{r, message=FALSE}
+library(forecast)
+ggAcf(milk.lm$residuals)
+```
+
+```{r}
+ggPacf(milk.lm$residuals)
+```
+
+We can find a obvious seasonal trend in the graph. Maybe AR(1), AR(2) will have a better result.
+
+## Question 3
+```{r}
+AR1 <- Arima(res %>% diff(12), order=c(1,0,0))
+AR1
+```
+```{r}
+checkresiduals(AR1)
+```
+```{r}
+AR2 <- Arima(res %>% diff(12), order=c(2,0,0))
+AR2
+```
+```{r}
+checkresiduals(AR2)
+```
+```{r}
+MA1 <- Arima(res %>% diff(12), order=c(0,0,1))
+MA1
+```
+```{r}
+checkresiduals(MA1)
+```
+```{r}
+MA2 <- Arima(res %>% diff(12), order=c(0,0,2))
+MA2
+```
+```{r}
+checkresiduals(MA2)
+```
+
+If we pick AIC as the evaluation, AR1 and AR2 are similar. AR2 is the best fit among the 4 fits.
+
+
+
+## Question 4
+
+```{r}
+AIC(Arima(res %>% diff(12), order=c(2,0,1)))
+AIC(Arima(res %>% diff(12), order=c(2,0,2)))
+AIC(Arima(res %>% diff(12), order=c(2,0,3)))
+AIC(Arima(res %>% diff(12), order=c(3,0,1)))
+AIC(Arima(res %>% diff(12), order=c(3,0,2)))
+AIC(Arima(res %>% diff(12), order=c(3,0,3)))
+```
+So, the top 2 fits are ARMA(2,3) and ARMA(3,1)
+
+
+
+
+
+
+
+
+
+
+
+
+
