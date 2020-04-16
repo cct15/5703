@@ -1,0 +1,99 @@
+---
+title: "Homework 3 Exercise 2"
+author: "Chutian Chen cc4515; Congcheng Yan cy2550; Mingrui Liu ml4404"
+date: "2020/4/16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r message=FALSE}
+library(mgcv)
+cars$speed2 <- (cars$speed)^2
+model1 = lm(dist~speed + speed2, data = cars)
+summary(model1)
+AIC(model1)
+```
+
+```{r}
+model2 = lm(dist~speed, data = cars)
+summary(model2)
+AIC(model2)
+```
+From the results, the model with speed2 is a better fit for the data.
+
+## Question 2
+From the hypothesis test result in Question 1, the p values are not so good. We can take the reaction time instead. Due to the different reaction time, it could lead to a non-linear effection to the model. Also, we can test the combination of the speed and the reaction time to see their influence to the regression.
+
+
+
+## Question 3
+
+```{r}
+
+myf <- function (X, y) {
+  qrx <- qr(X) ## returns a QR decomposition object
+  Q <- qr.Q(qrx,complete=TRUE) ## extract Q
+  R <- qr.R(qrx) ## extract R
+  f <- t(Q)%*%y
+  beta <- backsolve(R,f)
+  return(beta)
+}
+```
+## Question 4
+
+```{r}
+test1 <- myf(model.matrix(dist ~ speed + speed2, cars), data.matrix(cars[,c("dist")]))
+test1
+```
+
+The coefficients are the same as Question 1, so it works.
+
+## Question 5
+
+```{r}
+myf2 <- function (X, y) {
+  qrx <- qr(X) ## returns a QR decomposition object
+  Q <- qr.Q(qrx,complete=TRUE) ## extract Q
+  R <- qr.R(qrx) ## extract R
+  f <- t(Q)%*%y
+  beta <- backsolve(R,f)
+  
+  res <- y-X%*%beta
+  s <- as.vector(t(res)%*%res/(nrow(X)-ncol(X)))
+  var <- solve(R)%*%t(solve(R))*s
+  return(list(beta=beta, std=sqrt(as.matrix(diag(var),ncol=ncol(X)))))
+}
+```
+```{r}
+test2 <- myf2(model.matrix(dist ~ speed + speed2, cars), data.matrix(cars[,c("dist")]))
+test2$std
+```
+## Question 6
+
+
+```{r}
+mat= model.matrix(dist ~ speed + speed2, cars)
+pt(test2$beta / test2$std, nrow(mat)-ncol(mat), lower.tail=FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
